@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>背單字APP</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- 導航欄 -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <h1 class="logo">📚 背單字APP</h1>
+            <div class="nav-buttons">
+                <button id="navHome" class="nav-btn active">首頁</button>
+                <button id="navManage" class="nav-btn">管理單字</button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- 首頁視圖 -->
+    <div id="homeView" class="view active">
+        <div class="container">
+            <div class="card-container">
+                <div class="card" id="flashCard">
+                    <div class="card-inner">
+                        <div class="card-front">
+                            <div class="card-content">
+                                <span id="frontText">點擊開始</span>
+                            </div>
+                        </div>
+                        <div class="card-back">
+                            <div class="card-content">
+                                <div id="backContent" class="back-content">
+                                    <div class="translation">點擊卡片翻轉</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 控制按鈕 -->
+            <div class="controls">
+                <button id="prevBtn" class="btn btn-secondary">⬅️ 上一個</button>
+                <div class="card-info">
+                    <span id="cardIndex">0</span> / <span id="totalCards">0</span>
+                </div>
+                <button id="nextBtn" class="btn btn-secondary">下一個 ➡️</button>
+            </div>
+
+            <!-- 進度條 -->
+            <div class="progress-bar">
+                <div id="progressFill" class="progress-fill"></div>
+            </div>
+
+            <!-- 訊息顯示 -->
+            <div id="message" class="message"></div>
+        </div>
+    </div>
+
+    <!-- 管理頁面視圖 -->
+    <div id="manageView" class="view">
+        <div class="container">
+            <h2>管理單字</h2>
+
+            <!-- 新增單字表單 -->
+            <div class="form-section">
+                <h3>新增單字</h3>
+                <form id="addWordForm" class="form-group">
+                    <div class="form-row">
+                        <div class="form-field">
+                            <label for="englishInput">英文單字 *</label>
+                            <input type="text" id="englishInput" placeholder="輸入英文單字" required>
+                        </div>
+                        <button type="button" id="autoFillBtn" class="btn btn-auto">🤖 自動填入</button>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-field">
+                            <label for="translationInput">中文翻譯 *</label>
+                            <input type="text" id="translationInput" placeholder="輸入中文翻譯" required>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-field">
+                            <label for="partOfSpeechInput">詞性</label>
+                            <select id="partOfSpeechInput">
+                                <option value="">選擇詞性</option>
+                                <option value="名詞">名詞 (Noun)</option>
+                                <option value="動詞">動詞 (Verb)</option>
+                                <option value="形容詞">形容詞 (Adjective)</option>
+                                <option value="副詞">副詞 (Adverb)</option>
+                                <option value="代詞">代詞 (Pronoun)</option>
+                                <option value="介詞">介詞 (Preposition)</option>
+                                <option value="連詞">連詞 (Conjunction)</option>
+                                <option value="感歎詞">感歎詞 (Interjection)</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-field">
+                            <label for="exampleInput">例句</label>
+                            <textarea id="exampleInput" placeholder="輸入例句" rows="3"></textarea>
+                        </div>
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="submit" class="btn btn-primary">➕ 新增單字</button>
+                        <button type="reset" class="btn btn-secondary">清空</button>
+                    </div>
+                </form>
+
+                <!-- 加載提示 -->
+                <div id="loadingIndicator" class="loading-indicator" style="display: none;">
+                    <span class="spinner"></span>
+                    <span>自動填入中...</span>
+                </div>
+            </div>
+
+            <!-- 單字列表 -->
+            <div class="words-list-section">
+                <h3>現有單字 (<span id="wordCount">0</span>)</h3>
+                <div id="wordsList" class="words-list">
+                    <div class="empty-state">還沒有單字，點擊新增吧！</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
