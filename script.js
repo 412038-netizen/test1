@@ -26,6 +26,7 @@ const autoFillBtn = document.getElementById('autoFillBtn');
 const wordsList = document.getElementById('wordsList');
 const wordCount = document.getElementById('wordCount');
 const loadingIndicator = document.getElementById('loadingIndicator');
+const syncBtn = document.getElementById('syncBtn');
 
 const GAS_WEB_APP_URL = 'https://script.google.com/macros/s/YOUR_DEPLOYMENT_ID/exec';
 
@@ -70,6 +71,8 @@ function setupEventListeners() {
 
     // 自動填入按鈕
     autoFillBtn.addEventListener('click', handleAutoFill);
+    // 同步按鈕
+    if (syncBtn) syncBtn.addEventListener('click', handleSyncAll);
 }
 
 // 視圖切換
@@ -203,6 +206,41 @@ async function sendWordToBackend(word) {
     const result = await response.json();
     if (!result.success) {
         throw new Error(result.message || '後端返回錯誤');
+    }
+}
+
+async function sendAllWordsToBackend(wordsArray) {
+    const response = await fetch(GAS_WEB_APP_URL, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ action: 'bulkAdd', words: wordsArray })
+    });
+
+    if (!response.ok) {
+        throw new Error(`後端回應失敗：${response.status}`);
+    }
+
+    const result = await response.json();
+    if (!result.success) {
+        throw new Error(result.message || '後端返回錯誤');
+    }
+}
+
+async function handleSyncAll() {
+    if (!words || words.length === 0) {
+        showMessage('目前沒有單字可同步', 'info');
+        return;
+    }
+
+    try {
+        showMessage('🔁 正在同步所有單字到 Google 試算表...', 'info');
+        await sendAllWordsToBackend(words);
+        showMessage('✅ 所有單字已成功同步到 Google 試算表', 'success');
+    } catch (error) {
+        console.error('同步失敗:', error);
+        showMessage('❌ 同步失敗，請檢查 GAS_WEB_APP_URL 與部署設定', 'error');
     }
 }
 

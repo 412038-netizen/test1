@@ -199,6 +199,23 @@ const spreadsheetId = '1HlunyuAIov-TsC3m93JW5j9dLT53XHdvcB4S51c9_bA';
 4. 確認畫面顯示成功訊息。
 5. 檢查 Google 試算表是否已新增一列新資料。
 
+### 同步所有既有單字到試算表
+
+前端已新增「🔁 同步至 Google 試算表」按鈕，會把目前 localStorage 或記憶中的所有單字批次送到 Apps Script 的 `bulkAdd` API。使用流程：
+
+1. 部署 Apps Script（見第 3.3 步驟）並取得 Web App URL。
+2. 在 `script.js` 中把 `GAS_WEB_APP_URL` 設為你的 Web App URL。
+3. 開啟網頁，切到「管理單字」，點 `🔁 同步至 Google 試算表`。
+4. 成功時會顯示成功訊息；失敗請查看瀏覽器 Console 與 Network。
+
+範例：按鈕會呼叫 POST，body 範例：
+```json
+{
+  "action": "bulkAdd",
+  "words": [ {"english":"...","translation":"...","rootAnalysis":"...","partOfSpeech":"...","example":"..."}, ... ]
+}
+```
+
 ## 5. 常見問題與排查
 - `sendWordToBackend` 失敗：確認 `GAS_WEB_APP_URL` 是否正確，並且 Apps Script 已成功部署。
 - `後端回應失敗`：檢查 Apps Script 是否允許 POST，或試算表 ID/工作表名稱是否正確。
