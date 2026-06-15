@@ -19,12 +19,15 @@ const message = document.getElementById('message');
 const addWordForm = document.getElementById('addWordForm');
 const englishInput = document.getElementById('englishInput');
 const translationInput = document.getElementById('translationInput');
+const rootAnalysisInput = document.getElementById('rootAnalysisInput');
 const partOfSpeechInput = document.getElementById('partOfSpeechInput');
 const exampleInput = document.getElementById('exampleInput');
 const autoFillBtn = document.getElementById('autoFillBtn');
 const wordsList = document.getElementById('wordsList');
 const wordCount = document.getElementById('wordCount');
 const loadingIndicator = document.getElementById('loadingIndicator');
+
+const GAS_WEB_APP_URL = 'https://script.google.com/macros/s/YOUR_DEPLOYMENT_ID/exec';
 
 // 初始化
 function init() {
@@ -104,6 +107,7 @@ function displayCard(index) {
 
     backContent.innerHTML = `
         <div class="translation">${word.translation}</div>
+        ${word.rootAnalysis ? `<div class="root-analysis">字根分析：${word.rootAnalysis}</div>` : ''}
         ${word.partOfSpeech ? `<div class="part-of-speech">${word.partOfSpeech}</div>` : ''}
         ${word.example ? `<div class="example">"${word.example}"</div>` : ''}
     `;
@@ -133,11 +137,12 @@ function showNextCard() {
 }
 
 // 添加單字
-function handleAddWord(e) {
+async function handleAddWord(e) {
     e.preventDefault();
 
     const english = englishInput.value.trim();
     const translation = translationInput.value.trim();
+    const rootAnalysis = rootAnalysisInput.value.trim();
     const partOfSpeech = partOfSpeechInput.value.trim();
     const example = exampleInput.value.trim();
 
@@ -156,22 +161,49 @@ function handleAddWord(e) {
         id: Date.now(),
         english,
         translation,
+        rootAnalysis,
         partOfSpeech,
         example,
         createdAt: new Date().toLocaleString('zh-TW')
     };
 
-    words.push(newWord);
-    saveWordsToStorage();
-    addWordForm.reset();
-    showMessage('✅ 單字已添加', 'success');
-    renderWordsList();
+    try {
+        await sendWordToBackend(newWord);
+        words.push(newWord);
+        saveWordsToStorage();
+        addWordForm.reset();
+        showMessage('✅ 單字已送出並新增成功', 'success');
+        renderWordsList();
+    } catch (error) {
+        console.error('送出後端錯誤:', error);
+        showMessage('❌ 無法送出單字到後端，請稍後重試', 'error');
+        return;
+    }
 
     // 自動切回首頁並顯示新的單字
     if (currentCardIndex === 0 && words.length > 1) {
         currentCardIndex = words.length - 1;
     }
     displayCard(currentCardIndex);
+}
+
+async function sendWordToBackend(word) {
+    const response = await fetch(GAS_WEB_APP_URL, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ action: 'addWord', word })
+    });
+
+    if (!response.ok) {
+        throw new Error(`後端回應失敗：${response.status}`);
+    }
+
+    const result = await response.json();
+    if (!result.success) {
+        throw new Error(result.message || '後端返回錯誤');
+    }
 }
 
 // 自動填入功能
@@ -263,6 +295,7 @@ function renderWordsList() {
         <div class="word-card">
             <div class="word-card-title">${escapeHtml(word.english)}</div>
             <div class="word-card-translation">${escapeHtml(word.translation)}</div>
+            ${word.rootAnalysis ? `<div class="word-card-root">${escapeHtml(word.rootAnalysis)}</div>` : ''}
             ${word.partOfSpeech ? `<div class="word-card-pos">${escapeHtml(word.partOfSpeech)}</div>` : ''}
             ${word.example ? `<div class="word-card-example">"${escapeHtml(word.example)}"</div>` : ''}
             <div class="word-card-actions">

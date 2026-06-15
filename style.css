@@ -209,6 +209,18 @@ body {
     padding-left: 1rem;
 }
 
+.root-analysis,
+.word-card-root {
+    font-size: 0.95rem;
+    color: #4a5568;
+    line-height: 1.5;
+    background: rgba(102, 126, 234, 0.08);
+    border-left: 3px solid #667eea;
+    padding: 0.8rem 1rem;
+    border-radius: 8px;
+    margin-bottom: 0.8rem;
+}
+
 /* 控制按鈕 */
 .controls {
     display: flex;
