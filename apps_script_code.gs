@@ -23,6 +23,7 @@ function doPost(e) {
         new Date(),
         w.english || '',
         w.translation || '',
+        w.owner || '',
         w.rootAnalysis || '',
         w.partOfSpeech || '',
         w.example || ''
@@ -35,6 +36,7 @@ function doPost(e) {
         new Date(),
         w.english || '',
         w.translation || '',
+        w.owner || '',
         w.rootAnalysis || '',
         w.partOfSpeech || '',
         w.example || ''

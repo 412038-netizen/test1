@@ -117,7 +117,8 @@ async function sendWordToBackend(word) {
 - Timestamp
 - English
 - Translation
-- Root Analysis
+ - Owner
+ - Root Analysis
 - Part of Speech
 - Example
 
@@ -147,6 +148,7 @@ function doPost(e) {
       new Date(),
       word.english || '',
       word.translation || '',
+      word.owner || '',
       word.rootAnalysis || '',
       word.partOfSpeech || '',
       word.example || ''
@@ -195,6 +197,7 @@ const spreadsheetId = '1HlunyuAIov-TsC3m93JW5j9dLT53XHdvcB4S51c9_bA';
 ## 4. 測試流程
 1. 開啟 `index.html`，切換到「管理單字」頁面。
 2. 輸入：英文單字、中文翻譯、字根分析、詞性、例句。
+  - 在上方 `使用者帳號（暱稱）` 欄位輸入你的帳號或暱稱並按「🔒 儲存」，系統會把該名稱作為 `Owner` 存入試算表。
 3. 點擊「➕ 新增單字」。
 4. 確認畫面顯示成功訊息。
 5. 檢查 Google 試算表是否已新增一列新資料。
@@ -212,9 +215,13 @@ const spreadsheetId = '1HlunyuAIov-TsC3m93JW5j9dLT53XHdvcB4S51c9_bA';
 ```json
 {
   "action": "bulkAdd",
-  "words": [ {"english":"...","translation":"...","rootAnalysis":"...","partOfSpeech":"...","example":"..."}, ... ]
+  "words": [ {"english":"...","translation":"...","owner":"your-name","rootAnalysis":"...","partOfSpeech":"...","example":"..."}, ... ]
 }
 ```
+
+### 帳號與驗證說明
+- 本實作提供輕量級的本地帳號機制：使用者在頁面輸入「使用者帳號（暱稱）」後會儲存在瀏覽器的 `localStorage`，新增或同步的單字會帶上該 `owner` 字段寫入試算表。
+- 若你需要更嚴謹的身分驗證（例如避免偽造 owner、取得使用者 email），建議使用 Google Sign-In 或 OAuth 並將取得的使用者識別（例如 email）帶到後端；這需要在前端整合 Google API 並修改 Apps Script 來驗證身分。這裡可提供範例如需。
 
 ## 5. 常見問題與排查
 - `sendWordToBackend` 失敗：確認 `GAS_WEB_APP_URL` 是否正確，並且 Apps Script 已成功部署。

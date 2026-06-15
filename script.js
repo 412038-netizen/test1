@@ -27,6 +27,8 @@ const wordsList = document.getElementById('wordsList');
 const wordCount = document.getElementById('wordCount');
 const loadingIndicator = document.getElementById('loadingIndicator');
 const syncBtn = document.getElementById('syncBtn');
+const usernameInput = document.getElementById('usernameInput');
+const saveUserBtn = document.getElementById('saveUserBtn');
 
 const GAS_WEB_APP_URL = 'https://script.google.com/macros/s/YOUR_DEPLOYMENT_ID/exec';
 
@@ -35,6 +37,7 @@ function init() {
     loadWordsFromStorage();
     setupEventListeners();
     updateUI();
+    loadSavedUser();
     // 載入示例數據（如果是第一次使用）
     if (words.length === 0) {
         loadSampleData();
@@ -73,6 +76,29 @@ function setupEventListeners() {
     autoFillBtn.addEventListener('click', handleAutoFill);
     // 同步按鈕
     if (syncBtn) syncBtn.addEventListener('click', handleSyncAll);
+    // 使用者儲存按鈕
+    if (saveUserBtn) saveUserBtn.addEventListener('click', handleSaveUser);
+}
+
+function handleSaveUser() {
+    const name = usernameInput ? usernameInput.value.trim() : '';
+    if (!name) {
+        showMessage('請輸入使用者名稱', 'error');
+        return;
+    }
+    localStorage.setItem('vocab_username', name);
+    showMessage('🔒 使用者已儲存', 'success');
+    // 切換使用者後重置索引與畫面
+    currentCardIndex = 0;
+    renderWordsList();
+    displayCard(currentCardIndex);
+}
+
+function loadSavedUser() {
+    const name = localStorage.getItem('vocab_username') || '';
+    if (usernameInput) usernameInput.value = name;
+    currentCardIndex = 0;
+    return name;
 }
 
 // 視圖切換
@@ -99,13 +125,14 @@ function flipCard() {
 
 // 顯示當前卡片
 function displayCard(index) {
-    if (words.length === 0) {
+    const list = getVisibleWords();
+    if (list.length === 0) {
         frontText.textContent = '沒有單字';
         backContent.innerHTML = '<div class="translation">請先在管理頁面添加單字</div>';
         return;
     }
 
-    const word = words[index];
+    const word = list[index];
     frontText.textContent = word.english;
 
     backContent.innerHTML = `
@@ -120,22 +147,24 @@ function displayCard(index) {
     
     // 更新進度
     cardIndex.textContent = index + 1;
-    totalCards.textContent = words.length;
-    const progressPercent = ((index + 1) / words.length) * 100;
+    totalCards.textContent = list.length;
+    const progressPercent = ((index + 1) / list.length) * 100;
     progressFill.style.width = progressPercent + '%';
 }
 
 // 上一個卡片
 function showPreviousCard() {
-    if (words.length === 0) return;
-    currentCardIndex = (currentCardIndex - 1 + words.length) % words.length;
+    const list = getVisibleWords();
+    if (list.length === 0) return;
+    currentCardIndex = (currentCardIndex - 1 + list.length) % list.length;
     displayCard(currentCardIndex);
 }
 
 // 下一個卡片
 function showNextCard() {
-    if (words.length === 0) return;
-    currentCardIndex = (currentCardIndex + 1) % words.length;
+    const list = getVisibleWords();
+    if (list.length === 0) return;
+    currentCardIndex = (currentCardIndex + 1) % list.length;
     displayCard(currentCardIndex);
 }
 
@@ -165,6 +194,7 @@ async function handleAddWord(e) {
         english,
         translation,
         rootAnalysis,
+        owner: localStorage.getItem('vocab_username') || '',
         partOfSpeech,
         example,
         createdAt: new Date().toLocaleString('zh-TW')
@@ -320,16 +350,21 @@ function deleteWord(id) {
     }
 }
 
+function getCurrentUsername() {
+    return localStorage.getItem('vocab_username') || '';
+}
+
 // 渲染單字列表
 function renderWordsList() {
-    wordCount.textContent = words.length;
+    const visible = getVisibleWords();
+    wordCount.textContent = visible.length;
 
-    if (words.length === 0) {
+    if (visible.length === 0) {
         wordsList.innerHTML = '<div class="empty-state">還沒有單字，點擊新增吧！</div>';
         return;
     }
 
-    wordsList.innerHTML = words.map(word => `
+    wordsList.innerHTML = visible.map(word => `
         <div class="word-card">
             <div class="word-card-title">${escapeHtml(word.english)}</div>
             <div class="word-card-translation">${escapeHtml(word.translation)}</div>
@@ -341,6 +376,12 @@ function renderWordsList() {
             </div>
         </div>
     `).join('');
+}
+
+function getVisibleWords() {
+    const user = getCurrentUsername();
+    if (!user) return words;
+    return words.filter(w => (w.owner || '') === user);
 }
 
 // 顯示訊息
