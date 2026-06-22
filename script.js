@@ -200,17 +200,21 @@ async function handleAddWord(e) {
         createdAt: new Date().toLocaleString('zh-TW')
     };
 
-    try {
-        await sendWordToBackend(newWord);
-        words.push(newWord);
-        saveWordsToStorage();
-        addWordForm.reset();
-        showMessage('✅ 單字已送出並新增成功', 'success');
-        renderWordsList();
-    } catch (error) {
-        console.error('送出後端錯誤:', error);
-        showMessage('❌ 無法送出單字到後端，請稍後重試', 'error');
-        return;
+    words.push(newWord);
+    saveWordsToStorage();
+    addWordForm.reset();
+    renderWordsList();
+
+    if (isBackendConfigured()) {
+        try {
+            await sendWordToBackend(newWord);
+            showMessage('✅ 單字已送出並新增成功', 'success');
+        } catch (error) {
+            console.error('送出後端錯誤:', error);
+            showMessage('⚠️ 單字已儲存到本機，但後端同步失敗，請確認 GAS_WEB_APP_URL 是否正確', 'warning');
+        }
+    } else {
+        showMessage('⚠️ GAS_WEB_APP_URL 尚未設定，單字已儲存至本機。', 'warning');
     }
 
     // 自動切回首頁並顯示新的單字
@@ -218,6 +222,14 @@ async function handleAddWord(e) {
         currentCardIndex = words.length - 1;
     }
     displayCard(currentCardIndex);
+}
+
+function isBackendConfigured() {
+    return (
+        GAS_WEB_APP_URL &&
+        !GAS_WEB_APP_URL.includes('YOUR_DEPLOYMENT_ID') &&
+        !GAS_WEB_APP_URL.includes('XXXXXXXXXXXX')
+    );
 }
 
 async function sendWordToBackend(word) {
