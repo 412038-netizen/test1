@@ -109,9 +109,15 @@ function handleSaveUser() {
 
 function updateLoginPrompt() {
     if (!loginPrompt) return;
-    loginPrompt.textContent = '請登入帳號';
-    loginPrompt.classList.add('login-required');
-    loginPrompt.classList.remove('login-welcome');
+    const user = getCurrentUsername();
+    if (!user) {
+        loginPrompt.style.display = 'block';
+        loginPrompt.textContent = '請登入帳號';
+        loginPrompt.classList.add('login-required');
+        loginPrompt.classList.remove('login-welcome');
+    } else {
+        loginPrompt.style.display = 'none';
+    }
 }
 
 function loadSavedUser() {
