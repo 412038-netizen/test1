@@ -109,16 +109,9 @@ function handleSaveUser() {
 
 function updateLoginPrompt() {
     if (!loginPrompt) return;
-    const user = getCurrentUsername();
-    if (!user) {
-        loginPrompt.textContent = '請先到管理頁面登入帳號';
-        loginPrompt.classList.add('login-required');
-        loginPrompt.classList.remove('login-welcome');
-    } else {
-        loginPrompt.textContent = `目前使用者：${user}`;
-        loginPrompt.classList.add('login-welcome');
-        loginPrompt.classList.remove('login-required');
-    }
+    loginPrompt.textContent = '請登入帳號';
+    loginPrompt.classList.add('login-required');
+    loginPrompt.classList.remove('login-welcome');
 }
 
 function loadSavedUser() {

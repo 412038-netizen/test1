@@ -127,18 +127,9 @@ body {
     font-weight: 700;
     font-size: 1rem;
     margin-bottom: 1rem;
-}
-
-.login-prompt.login-required {
-    background: rgba(245, 101, 101, 0.12);
-    color: #c53030;
-    border: 1px solid rgba(245, 101, 101, 0.3);
-}
-
-.login-prompt.login-welcome {
-    background: rgba(72, 187, 120, 0.12);
-    color: #2f855a;
-    border: 1px solid rgba(72, 187, 120, 0.3);
+    background: rgba(255, 255, 255, 0.95);
+    color: #1a202c;
+    border: 1px solid rgba(0, 0, 0, 0.08);
 }
 
 .card {
