@@ -37,7 +37,8 @@ function init() {
     loadWordsFromStorage();
     setupEventListeners();
     updateUI();
-    loadSavedUser();
+    // 不自動載入先前帳號，每次都要求重新登入
+    // loadSavedUser();
     // 載入示例數據（如果是第一次使用）
     if (words.length === 0) {
         loadSampleData();
@@ -104,12 +105,10 @@ function handleSaveUser() {
 }
 
 function loadSavedUser() {
+    // 此功能保留但不會在初始化時自動呼叫
     const name = localStorage.getItem('vocab_username') || '';
     if (usernameInput) usernameInput.value = name;
     currentCardIndex = 0;
-    if (name) {
-        showMessage(`歡迎回來，${name}`, 'success');
-    }
     return name;
 }
 
