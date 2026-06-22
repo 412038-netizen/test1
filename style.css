@@ -120,6 +120,27 @@ body {
     justify-content: center;
 }
 
+.login-prompt {
+    padding: 1rem 1.2rem;
+    border-radius: 12px;
+    text-align: center;
+    font-weight: 700;
+    font-size: 1rem;
+    margin-bottom: 1rem;
+}
+
+.login-prompt.login-required {
+    background: rgba(245, 101, 101, 0.12);
+    color: #c53030;
+    border: 1px solid rgba(245, 101, 101, 0.3);
+}
+
+.login-prompt.login-welcome {
+    background: rgba(72, 187, 120, 0.12);
+    color: #2f855a;
+    border: 1px solid rgba(72, 187, 120, 0.3);
+}
+
 .card {
     width: 100%;
     max-width: 600px;

@@ -26,6 +26,7 @@ const autoFillBtn = document.getElementById('autoFillBtn');
 const wordsList = document.getElementById('wordsList');
 const wordCount = document.getElementById('wordCount');
 const loadingIndicator = document.getElementById('loadingIndicator');
+const loginPrompt = document.getElementById('loginPrompt');
 const syncBtn = document.getElementById('syncBtn');
 const usernameInput = document.getElementById('usernameInput');
 const saveUserBtn = document.getElementById('saveUserBtn');
@@ -37,6 +38,7 @@ function init() {
     loadWordsFromStorage();
     setupEventListeners();
     updateUI();
+    updateLoginPrompt();
     // 不自動載入先前帳號，每次都要求重新登入
     // loadSavedUser();
     // 載入示例數據（如果是第一次使用）
@@ -98,10 +100,25 @@ function handleSaveUser() {
     }
     localStorage.setItem('vocab_username', name);
     showMessage('🔒 使用者已儲存', 'success');
+    updateLoginPrompt();
     // 切換使用者後重置索引與畫面
     currentCardIndex = 0;
     renderWordsList();
     displayCard(currentCardIndex);
+}
+
+function updateLoginPrompt() {
+    if (!loginPrompt) return;
+    const user = getCurrentUsername();
+    if (!user) {
+        loginPrompt.textContent = '請先到管理頁面登入帳號';
+        loginPrompt.classList.add('login-required');
+        loginPrompt.classList.remove('login-welcome');
+    } else {
+        loginPrompt.textContent = `目前使用者：${user}`;
+        loginPrompt.classList.add('login-welcome');
+        loginPrompt.classList.remove('login-required');
+    }
 }
 
 function loadSavedUser() {
