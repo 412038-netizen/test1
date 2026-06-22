@@ -34,6 +34,7 @@
 - 把 `rootAnalysis` 一併打包到新增單字物件。
 - 新增 `sendWordToBackend` 函式，將資料 POST 給 Google Apps Script。
 - 更新 `displayCard` 與單字列表，顯示 `字根分析`。
+- `自動填入` 功能會嘗試從字典 API 取得 `詞性`，並將 API `origin` 資訊填入 `字根分析` 欄位。
 
 目前 `script.js` 已新增的主要程式碼：
 ```js
@@ -196,7 +197,7 @@ const spreadsheetId = '1HlunyuAIov-TsC3m93JW5j9dLT53XHdvcB4S51c9_bA';
 將 `YOUR_SPREADSHEET_ID` 替換成這個實際 ID。
 ## 4. 測試流程
 1. 開啟 `index.html`，切換到「管理單字」頁面。
-2. 輸入：英文單字、中文翻譯、字根分析、詞性、例句。
+2. 輸入：英文單字後可點「🤖 自動填入」讓系統自動嘗試取得詞性與字根分析，必要時再補中文翻譯、例句等欄位。
   - 在上方 `使用者帳號（暱稱）` 欄位輸入你的帳號或暱稱並按「🔒 儲存」，系統會把該名稱作為 `Owner` 存入試算表。
 3. 點擊「➕ 新增單字」。
 4. 確認畫面顯示成功訊息。

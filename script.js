@@ -78,6 +78,15 @@ function setupEventListeners() {
     if (syncBtn) syncBtn.addEventListener('click', handleSyncAll);
     // 使用者儲存按鈕
     if (saveUserBtn) saveUserBtn.addEventListener('click', handleSaveUser);
+    if (usernameInput) {
+        usernameInput.addEventListener('blur', handleSaveUser);
+        usernameInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                handleSaveUser();
+            }
+        });
+    }
 }
 
 function handleSaveUser() {
@@ -98,6 +107,9 @@ function loadSavedUser() {
     const name = localStorage.getItem('vocab_username') || '';
     if (usernameInput) usernameInput.value = name;
     currentCardIndex = 0;
+    if (name) {
+        showMessage(`歡迎回來，${name}`, 'success');
+    }
     return name;
 }
 
@@ -309,7 +321,7 @@ async function handleAutoFill() {
             translationInput.value = translationData.responseData.translatedText;
         }
 
-        // 使用 Free Dictionary API 獲取詞性和例句
+        // 使用 Free Dictionary API 獲取詞性、例句與字根分析來源
         const dictResponse = await fetch(
             `https://api.dictionaryapi.dev/api/v2/entries/en/${encodeURIComponent(english)}`
         );
@@ -318,10 +330,9 @@ async function handleAutoFill() {
             const dictData = await dictResponse.json();
             const entry = dictData[0];
 
-            // 取得詞性
             if (entry.meanings && entry.meanings.length > 0) {
                 const meaning = entry.meanings[0];
-                partOfSpeechInput.value = meaning.partOfSpeech;
+                partOfSpeechInput.value = meaning.partOfSpeech || '';
 
                 // 取得例句
                 if (meaning.definitions && meaning.definitions.length > 0) {
@@ -330,6 +341,11 @@ async function handleAutoFill() {
                         exampleInput.value = definition.example;
                     }
                 }
+            }
+
+            // 若 API 有 origin 資訊，當作字根分析來源
+            if (entry.origin) {
+                rootAnalysisInput.value = entry.origin;
             }
 
             showMessage('✅ 自動填入成功！', 'success');
